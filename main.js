@@ -82,22 +82,24 @@ const getUrlHtml = async (url, options = {}) => {
 const processTask = async (item) => {
     return retry(
         async () => {
-            const html = await getUrlHtml(item.url, item.options); // networkidle2
-            logger.info(`Fetched: ${item.url}`);
-
-            const formdata = new FormData();
-
-            formdata.append('html', html);
-            formdata.append('id', item.id);
-            formdata.append('status', true);
-            // formdata.append('signature', createHMAC(item)); // 添加请求签名
-
-            await axios.post(config.endpoints.push, formdata, {
-                proxy: false,
-                timeout: config.timeout.request || 10000,
-            });
-
-            logger.info(`Uploaded: ${item.url}`);
+            if(item.url) {
+                const html = await getUrlHtml(item.url, item.options); // networkidle2
+                logger.info(`Fetched: ${item.url}`);
+    
+                const formdata = new FormData();
+    
+                formdata.append('html', html);
+                formdata.append('id', item.id);
+                formdata.append('status', true);
+                // formdata.append('signature', createHMAC(item)); // 添加请求签名
+    
+                await axios.post(config.endpoints.push, formdata, {
+                    proxy: false,
+                    timeout: config.timeout.request || 10000,
+                });
+    
+                logger.info(`Uploaded: ${item.url}`);
+            }
         },
         {
             retries: config.retry.attempts || 3,
