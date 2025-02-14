@@ -54,8 +54,9 @@ const getUrlHtml = async (url, options = {}) => {
 
         // 拦截不必要的请求
         await page.setRequestInterception(true);
+
         page.on('request', (req) => {
-            ['document'].includes(req.resourceType()) ? req.continue() : req.abort();
+            options.allowRequestTypes || ['document'].includes(req.resourceType()) ? req.continue() : req.abort();
         });
 
         await page.goto(url, {
@@ -81,7 +82,7 @@ const getUrlHtml = async (url, options = {}) => {
 const processTask = async (item) => {
     return retry(
         async () => {
-            const html = await getUrlHtml(item.url, { waitUntil: 'domcontentloaded' }); // networkidle2
+            const html = await getUrlHtml(item.url, item.options); // networkidle2
             logger.info(`Fetched: ${item.url}`);
 
             const formdata = new FormData();
