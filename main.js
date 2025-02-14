@@ -120,7 +120,7 @@ const main = async () => {
                 timeout: config.timeout.request || 10000,
             });
 
-            console.log(response.data);
+            // console.log(response.data);
             
 
             const tasks = response.data.map((item) => limit(() => processTask(item)));
